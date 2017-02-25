@@ -4,9 +4,7 @@ buildscript {
   repositories {
     jcenter()
   }
-  repositories {
-    mavenCentral()
-  }
+
 
 
 
@@ -19,6 +17,10 @@ buildscript {
 }
 
 allprojects {
+  repositories {
+    mavenCentral()
+  }
+
   repositories {
     jcenter()
   }

@@ -35,16 +35,21 @@ public class ReadMeeApplication extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
-
+    overrideFont();
     setmNetComponent(DaggerNetComponent.builder()
         .appModule(new AppModule(this))
-        .netModule(new NetModule(""))
+        .netModule(new NetModule(getString(R.string.base_url)))
         .build());
 
     setmMainComponent(DaggerMainComponent.builder()
         .netComponent(getmNetComponent())
         .apiModule(new ApiModule())
         .build());
+  }
 
+  private void overrideFont() {
+    FontsOverride.setDefaultFont(this, "SANS_SERIF", "Raleway-Regular.ttf");
+    FontsOverride.setDefaultFont(this, "MONOSPACE", "Raleway-Bold.ttf");
+    FontsOverride.setDefaultFont(this, "SERIF", "Lobster.ttf");
   }
 }

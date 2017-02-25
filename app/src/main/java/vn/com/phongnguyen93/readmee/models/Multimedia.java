@@ -7,28 +7,18 @@ import java.util.ArrayList;
  */
 
 public class Multimedia {
-  private String credit;
+  public static final String SUBTYPE_THUMBNAIL = "thumbnail";
+  public static final String SUBTYPE_LARGE = "large";
+  public static final String SUBTYPE_XLARGE = "xlarge";
+
   private String url;
-  private String rank;
   private int height;
   private String subtype;
   private String type;
   private int width;
-  private String type_of_material;
-  private String _id;
-  private String word_count;
-  private ArrayList<Multimedia> multimedia;
-  private Headline headline;
-  private Keyword keyword;
-
-
-  public String getCredit() {
-    return credit;
-  }
-
-  public void setCredit(String credit) {
-    this.credit = credit;
-  }
+  private String format;
+  private String copyright;
+  private String caption;
 
   public String getUrl() {
     return url;
@@ -36,14 +26,6 @@ public class Multimedia {
 
   public void setUrl(String url) {
     this.url = url;
-  }
-
-  public String getRank() {
-    return rank;
-  }
-
-  public void setRank(String rank) {
-    this.rank = rank;
   }
 
   public int getHeight() {
@@ -78,104 +60,27 @@ public class Multimedia {
     this.width = width;
   }
 
-  public String getType_of_material() {
-    return type_of_material;
+  public String getFormat() {
+    return format;
   }
 
-  public void setType_of_material(String type_of_material) {
-    this.type_of_material = type_of_material;
+  public void setFormat(String format) {
+    this.format = format;
   }
 
-  public String get_id() {
-    return _id;
+  public String getCopyright() {
+    return copyright;
   }
 
-  public void set_id(String _id) {
-    this._id = _id;
+  public void setCopyright(String copyright) {
+    this.copyright = copyright;
   }
 
-  public String getWord_count() {
-    return word_count;
+  public String getCaption() {
+    return caption;
   }
 
-  public void setWord_count(String word_count) {
-    this.word_count = word_count;
+  public void setCaption(String caption) {
+    this.caption = caption;
   }
-
-  public ArrayList<Multimedia> getMultimedia() {
-    return multimedia;
-  }
-
-  public void setMultimedia(ArrayList<Multimedia> multimedia) {
-    this.multimedia = multimedia;
-  }
-
-  public Headline getHeadline() {
-    return headline;
-  }
-
-  public void setHeadline(Headline headline) {
-    this.headline = headline;
-  }
-
-  public Keyword getKeyword() {
-    return keyword;
-  }
-
-  public void setKeyword(Keyword keyword) {
-    this.keyword = keyword;
-  }
-
-  public class Headline{
-    private String main;
-    private String name;
-
-    public String getMain() {
-      return main;
-    }
-
-    public void setMain(String main) {
-      this.main = main;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-  }
-
-
-  public class Keyword{
-    private String rank;
-    private String name;
-    private String value;
-
-    public String getRank() {
-      return rank;
-    }
-
-    public void setRank(String rank) {
-      this.rank = rank;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    public void setValue(String value) {
-      this.value = value;
-    }
-  }
-
 }
