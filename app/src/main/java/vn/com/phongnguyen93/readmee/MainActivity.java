@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity
   }
 
   @Override public void onQueryFail() {
-    //onError();
+    if (!isMergeData) onError();
   }
 
   @Override public boolean onCreateOptionsMenu(final Menu menu) {
@@ -225,6 +225,7 @@ public class MainActivity extends BaseActivity
                 new AnimationUtility.AnimationEndCallback() {
                   @Override public void onAnimationEnd() {
                     if (articleQuery != null) {
+                      isMergeData = false;
                       articleQuery.setQuery(currentQueryString);
                       query(articleQuery);
                     }
