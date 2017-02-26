@@ -10,5 +10,5 @@ public interface ReadMeeEndpoint {
 
   @GET("articlesearch.json") Call<ApiResponse> searchArticle(@Query("api-key") String apiKey,
       @Query("q") String queryString, @Query("begin_date") String beginDate,
-      @Query("end_date") String endDate, @Query("sort") String sort, @Query("page") int page);
+      @Query("fq") String filterString, @Query("sort") String sort, @Query("page") int page);
 }

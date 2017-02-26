@@ -1,33 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
-		xmlns:tools="http://schemas.android.com/tools"
 		android:id="@+id/content_slide_up_view"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingLeft="@dimen/activity_horizontal_margin"
-		android:paddingRight="@dimen/activity_horizontal_margin"
-		android:paddingTop="@dimen/activity_vertical_margin"
+		android:background="@color/primary"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 	<RelativeLayout
-			android:id="@+id/slideView"
+			android:id="@+id/filter_summary_layout"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginTop="26dp"
-			android:background="@drawable/rounded_up_corners_bg">
-
+			android:layout_height="wrap_content"
+			android:padding="@dimen/space_medium">
 
 		<TextView
-				android:layout_alignParentTop="true"
-				android:text="Slide it down"
-				android:layout_width="match_parent"
+				android:id="@+id/tv_filter_title"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:id="@+id/textView"
-				android:gravity="center_horizontal"
-				android:textColor="@color/primary_text"
-				android:layout_marginTop="16dp" />
+				android:layout_centerHorizontal="true"
+				android:padding="@dimen/space_medium"
+				android:text="Filter"
+				android:textColor="@color/accent"
+				android:textSize="22sp"
+				android:textStyle="bold"/>
+
+
+		<LinearLayout
+				android:id="@+id/sort_layout"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/tv_filter_title"
+				android:layout_centerHorizontal="true"
+				android:orientation="horizontal">
+
+			<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Oldest"
+					android:textColor="@android:color/white"
+					android:textSize="16sp"
+					android:textStyle="bold"/>
+
+			<android.support.v7.widget.SwitchCompat
+					android:id="@+id/switch_sort_by"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:checked="true"
+					android:padding="@dimen/space_medium"/>
+
+			<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Newest"
+					android:textColor="@android:color/white"
+					android:textSize="16sp"
+					android:textStyle="bold"/>
+		</LinearLayout>
+
+		<TextView
+				android:id="@+id/tv_begin_date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/sort_layout"
+				style="@style/FilterSummaryText"/>
+
+		<TextView
+
+				android:id="@+id/tv_tags"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/tv_begin_date"
+				style="@style/FilterSummaryText"/>
+
 
 	</RelativeLayout>
 
+
+	<com.ogaclejapan.smarttablayout.SmartTabLayout
+			android:id="@+id/tab_layout"
+			android:layout_width="wrap_content"
+			android:layout_height="56dp"
+			android:layout_below="@+id/filter_summary_layout"
+			android:layout_centerHorizontal="true"
+			app:stl_defaultTabTextColor="@android:color/white"
+			app:stl_defaultTabTextHorizontalPadding="18dp"
+			app:stl_defaultTabTextMinWidth="80dp"
+			app:stl_defaultTabTextSize="18sp"
+			app:stl_dividerColor="@color/primary_dark"
+			app:stl_dividerThickness="2dp">
+
+	</com.ogaclejapan.smarttablayout.SmartTabLayout>
+
+	<android.support.v4.view.ViewPager
+			android:id="@+id/view_pager"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/filter_submit_layout"
+			android:layout_below="@id/tab_layout">
+	</android.support.v4.view.ViewPager>
+
+	<LinearLayout
+			android:id="@+id/filter_submit_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:background="@color/accent"
+			android:orientation="horizontal"
+			android:weightSum="1">
+
+		<ImageButton
+				android:id="@+id/btn_close"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:background="@null"
+				android:padding="@dimen/space_large"
+				android:src="@drawable/ic_close_black_24dp"/>
+
+		<View
+				android:layout_width="1dp"
+				android:layout_height="match_parent"
+				android:layout_marginBottom="@dimen/space_medium"
+				android:layout_marginTop="@dimen/space_medium"
+				android:background="@color/primary"/>
+
+		<ImageButton
+				android:id="@+id/btn_submit"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:background="@null"
+				android:padding="@dimen/space_large"
+				android:src="@drawable/ic_filter_list_black_24dp"/>
+
+	</LinearLayout>
 </RelativeLayout>

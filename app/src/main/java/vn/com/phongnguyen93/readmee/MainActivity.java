@@ -1,90 +1,118 @@
 package vn.com.phongnguyen93.readmee;
 
-import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.transition.Transition;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import java.util.ArrayList;
+import vn.com.phongnguyen93.readmee.adapters.ArticleAdapter;
 import vn.com.phongnguyen93.readmee.models.Article;
 import vn.com.phongnguyen93.readmee.models.ArticleQuery;
-import vn.com.phongnguyen93.readmee.ui_view.SlideUp;
+import vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout;
 
 public class MainActivity extends BaseActivity
-    implements ArticleRepository.ArticleQueryCallback, BaseActivity.SearchViewQueryCallback {
+    implements ArticleRepository.ArticleQueryCallback, BaseActivity.SearchViewQueryCallback,
+    FilterCallback.FilterSubmitCallback, FilterCallback.FilterInteractionCallback,
+    NetworkReceiver.NetworkCheck {
   private static final int DEFAULT_ITEM_SPAN = 2;
   private static final int DEFAULT_SPACE_SIZE = 24;
   @BindView(R.id.list_article) RecyclerView listArticle;
   @BindView(R.id.toolbar) Toolbar toolbar;
   @BindView(R.id.search_toolbar) Toolbar searchToolbar;
   @BindView(R.id.list_layout) CoordinatorLayout listLayout;
-  @BindView(R.id.filter_layout) RelativeLayout filterLayout;
-  @BindView(R.id.dim) FrameLayout background;
+  @BindView(R.id.filter_layout) FrameLayout filterLayout;
   @BindView(R.id.fab_filter) FloatingActionButton fabFilter;
+  @BindView(R.id.fab_load_more) FloatingActionButton fabLoadMore;
+  @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
+  @BindView(R.id.loading_layout) RelativeLayout loadingLayout;
+  @BindView(R.id.error_layout) RelativeLayout errorLayout;
+  @BindView(R.id.network_error_layout) RelativeLayout netErrorLayout;
 
   private ArticleAdapter articleAdapter;
-  private SlideUp slideUp;
+  private String currentQueryString;
+  private ArticleQuery currentQuery;
+  private int currentPage;
+  private NetworkReceiver networkReceiver;
+  private boolean isMergeData;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
     setSupportActionBar(toolbar);
+    initUI();
+    currentPage = 0;
+  }
+
+  private void initUI() {
     applyFontForToolbarTitle(toolbar);
     setSearchViewQueryCallback(this);
     setSearchtollbar(searchToolbar);
     setupRecyclerView();
     setupFilterView();
+    setupNetworkConnectionListener();
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private void initUI() {
-    AnimationUtility.enterRevealAnim(listLayout,this);
+  private void setupNetworkConnectionListener() {
+    networkReceiver = new NetworkReceiver(this);
+    this.registerReceiver(networkReceiver,
+        new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
   }
 
   private void setupFilterView() {
-    slideUp = new SlideUp.Builder(filterLayout).withListeners(new SlideUp.Listener() {
-      @Override public void onSlide(float percent) {
-        background.setAlpha(1 - (percent / 100));
+
+    getSupportFragmentManager().beginTransaction()
+        .replace(R.id.filter_layout,
+            FilterFragment.newInstance(MainActivity.this, MainActivity.this))
+        .commit();
+    slidingUpPanelLayout.setAnchorPoint(0.5f);
+    //slidingUpPanelLayout.setTouchEnabled(false);
+    slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+      @Override public void onPanelSlide(View panel, float slideOffset) {
+
       }
 
-       @Override public void onVisibilityChanged(int visibility) {
-        if (visibility == View.GONE) {
+      @Override
+      public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
+          SlidingUpPanelLayout.PanelState newState) {
+        if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
           fabFilter.show();
+          slidingUpPanelLayout.setTouchEnabled(true);
+        }
+        if (previousState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+          slidingUpPanelLayout.setTouchEnabled(false);
         }
       }
-    })
-        .withStartGravity(Gravity.BOTTOM)
-        .withLoggingEnabled(true)
-        .withGesturesEnabled(true)
-        .withStartState(SlideUp.State.HIDDEN)
-        .build();
+    });
 
-    final boolean[] isMove = { false };
     fabFilter.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        //slideUp.show();
-        //AnimationUtility.interpolatorAnim(false,listLayout,MainActivity.this);
-        //fabFilter.hide();
-        isMove[0] =!isMove[0];
-        AnimationUtility.moveView(isMove[0],fabFilter,MainActivity.this);
+        AnimationUtility.stub(fabFilter, MainActivity.this, listLayout,
+            new AnimationUtility.AnimationEndCallback() {
+              @Override public void onAnimationEnd() {
+                AnimationUtility.enterRevealSlidingPanelAnim(filterLayout, slidingUpPanelLayout,
+                    MainActivity.this);
+              }
+            });
+      }
+    });
+
+    fabLoadMore.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        ++currentPage;
+        currentQuery.setPage(currentPage);
+        query(currentQuery);
       }
     });
   }
@@ -100,21 +128,47 @@ public class MainActivity extends BaseActivity
 
     SpaceItemDecoration decoration = new SpaceItemDecoration(DEFAULT_SPACE_SIZE);
     listArticle.addItemDecoration(decoration);
+
+    listArticle.addOnScrollListener(new RecyclerView.OnScrollListener() {
+      @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        super.onScrolled(recyclerView, dx, dy);
+        int visibleThreshold = 4;
+
+        if (dy >= 0) { // only when scrolling up
+          StaggeredGridLayoutManager layoutManager =
+              (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+          int totalItemCount = layoutManager.getItemCount();
+          int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPositions(null)[0];
+
+          if (totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+            ++currentPage;
+            currentQuery.setPage(currentPage);
+            query(currentQuery);
+          }
+        }
+      }
+    });
+  }
+
+  private void query(ArticleQuery articleQuery) {
+    currentQuery = articleQuery;
+    ArticleRepository.getInstance().searchArticle(articleQuery, this);
   }
 
   @Override protected void onResume() {
     super.onResume();
-    ArticleRepository.getInstance()
-        .searchArticle(new ArticleQuery(null, null, ArticleQuery.SORT_NEWEST, 0, null), this);
+    onLoading();
+    query(new ArticleQuery(null, null, ArticleQuery.SORT_NEWEST, 0, null));
   }
 
   @Override public void onQuerySuccess(ArrayList<Article> articles) {
-    initUI();
-    articleAdapter.setArticles(articles);
+    onSuccess();
+    articleAdapter.setArticles(articles, isMergeData);
+    isMergeData = true;
   }
 
   @Override public void onQueryFail() {
-
+    //onError();
   }
 
   @Override public boolean onCreateOptionsMenu(final Menu menu) {
@@ -126,20 +180,76 @@ public class MainActivity extends BaseActivity
   }
 
   @Override protected void onError() {
-
+    errorLayout.setVisibility(View.VISIBLE);
+    listLayout.setVisibility(View.GONE);
+    loadingLayout.setVisibility(View.GONE);
+    netErrorLayout.setVisibility(View.GONE);
   }
 
   @Override protected void onLoading() {
-
+    errorLayout.setVisibility(View.GONE);
+    listLayout.setVisibility(View.GONE);
+    loadingLayout.setVisibility(View.VISIBLE);
+    netErrorLayout.setVisibility(View.GONE);
   }
 
   @Override protected void onSuccess() {
+    errorLayout.setVisibility(View.GONE);
+    listLayout.setVisibility(View.VISIBLE);
+    loadingLayout.setVisibility(View.GONE);
+    netErrorLayout.setVisibility(View.GONE);
+  }
 
+  @Override protected void onNetworkError() {
+    errorLayout.setVisibility(View.GONE);
+    listLayout.setVisibility(View.GONE);
+    loadingLayout.setVisibility(View.GONE);
+    netErrorLayout.setVisibility(View.VISIBLE);
   }
 
   @Override public void onQuery(String queryString) {
-    ArticleRepository.getInstance()
-        .searchArticle(new ArticleQuery(null, null, ArticleQuery.SORT_NEWEST, 0, queryString),
-            this);
+    isMergeData = false;
+    currentQueryString = queryString;
+    currentQuery.setQuery(currentQueryString);
+    currentQuery.setPage(0);
+    currentQuery.setFilterQuery(null);
+    query(currentQuery);
+  }
+
+  @Override public void onSubmitFilter(final ArticleQuery articleQuery) {
+    AnimationUtility.exitRevealAnim(filterLayout, true, fabFilter,
+        new AnimationUtility.AnimationEndCallback() {
+          @Override public void onAnimationEnd() {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            AnimationUtility.stub2(fabFilter, MainActivity.this, listLayout,
+                new AnimationUtility.AnimationEndCallback() {
+                  @Override public void onAnimationEnd() {
+                    if (articleQuery != null) {
+                      articleQuery.setQuery(currentQueryString);
+                      query(articleQuery);
+                    }
+                  }
+                });
+          }
+        });
+  }
+
+  @Override protected void onStop() {
+    super.onStop();
+    if (networkReceiver != null) this.unregisterReceiver(networkReceiver);
+  }
+
+  @Override public void onChildViewInteract() {
+    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+  }
+
+  @Override public void onConnected() {
+    query(currentQuery);
+    isMergeData = true;
+  }
+
+  @Override public void onDisconnected() {
+    onNetworkError();
+    isMergeData = false;
   }
 }

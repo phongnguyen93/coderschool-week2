@@ -10,6 +10,7 @@ public class Multimedia {
   public static final String SUBTYPE_THUMBNAIL = "thumbnail";
   public static final String SUBTYPE_LARGE = "large";
   public static final String SUBTYPE_XLARGE = "xlarge";
+  public static final String SUBTYPE_WIDE = "wide";
 
   private String url;
   private int height;

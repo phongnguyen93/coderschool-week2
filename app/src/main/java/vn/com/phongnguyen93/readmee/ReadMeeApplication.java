@@ -1,6 +1,7 @@
 package vn.com.phongnguyen93.readmee;
 
 import android.app.Application;
+import android.content.Context;
 import vn.com.phongnguyen93.readmee.network.di.components.DaggerMainComponent;
 import vn.com.phongnguyen93.readmee.network.di.components.DaggerNetComponent;
 import vn.com.phongnguyen93.readmee.network.di.components.MainComponent;
@@ -16,6 +17,7 @@ import vn.com.phongnguyen93.readmee.network.di.modules.NetModule;
 public class ReadMeeApplication extends Application {
   private static NetComponent mNetComponent;
   private static MainComponent mMainComponent;
+  private static Context context;
 
   public static MainComponent getmMainComponent() {
     return mMainComponent;
@@ -35,6 +37,7 @@ public class ReadMeeApplication extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
+    context = this;
     overrideFont();
     setmNetComponent(DaggerNetComponent.builder()
         .appModule(new AppModule(this))
@@ -51,5 +54,9 @@ public class ReadMeeApplication extends Application {
     FontsOverride.setDefaultFont(this, "SANS_SERIF", "Raleway-Regular.ttf");
     FontsOverride.setDefaultFont(this, "MONOSPACE", "Raleway-Bold.ttf");
     FontsOverride.setDefaultFont(this, "SERIF", "Lobster.ttf");
+  }
+
+  public static Context getAppContext(){
+    return context;
   }
 }

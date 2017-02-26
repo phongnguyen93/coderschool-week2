@@ -1,68 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:app="http://schemas.android.com/apk/res-auto"
 		xmlns:tools="http://schemas.android.com/tools"
-		android:id="@+id/activity_main"
+		android:id="@+id/sliding_layout"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:orientation="vertical"
+		android:gravity="bottom"
+		app:umanoDragView="@+id/filter_layout"
+		app:umanoOverlay="true"
+		app:umanoPanelHeight="0dp"
+		app:umanoParallaxOffset="?actionBarSize"
+		app:umanoScrollableView="@+id/list_layout"
+		app:umanoShadowHeight="4dp"
 		tools:context="vn.com.phongnguyen93.readmee.MainActivity">
 
 
-
-	<android.support.design.widget.AppBarLayout
-			android:id="@+id/appbar"
+	<RelativeLayout
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:fitsSystemWindows="true"
-			app:elevation="10dp">
+			android:layout_height="wrap_content">
+
+		<android.support.design.widget.AppBarLayout
+				android:id="@+id/appbar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:fitsSystemWindows="true"
+				app:elevation="10dp">
+
+			<FrameLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
+
+				<include
+						layout="@layout/toolbar"
+						android:id="@+id/toolbar"/>
+
+				<include
+						layout="@layout/search_toolbar"
+						android:visibility="gone"/>
+			</FrameLayout>
+		</android.support.design.widget.AppBarLayout>
 
 		<FrameLayout
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+				android:layout_height="match_parent"
+				android:layout_below="@id/appbar">
 
 			<include
-					layout="@layout/toolbar"
-					android:id="@+id/toolbar"/>
+					layout="@layout/list_layout"
+					android:id="@+id/list_layout"/>
 
 			<include
-					layout="@layout/search_toolbar"
+					layout="@layout/error_layout"
+					android:id="@+id/error_layout"
 					android:visibility="gone"/>
+
+			<include
+					layout="@layout/network_error_layout"
+					android:id="@+id/network_error_layout"
+					android:visibility="gone"/>
+
+			<include
+					layout="@layout/loading_layout"
+					android:id="@+id/loading_layout"
+					android:visibility="gone"/>
+
 		</FrameLayout>
-	</android.support.design.widget.AppBarLayout>
+	</RelativeLayout>
 
 	<FrameLayout
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_below="@id/appbar">
+			android:layout_height="wrap_content"
+			android:id="@+id/filter_layout"
+			android:visibility="gone"/>
+</vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout>
 
-		<include
-				layout="@layout/list_layout"
-				android:id="@+id/list_layout"/>
-
-		<include
-				layout="@layout/error_layout"
-				android:id="@+id/error_layout"
-				android:visibility="gone"/>
-
-		<include
-				layout="@layout/loading_layout"
-				android:id="@+id/loading_layout"
-				android:visibility="gone"/>
-
-		<FrameLayout
-				android:id="@+id/dim"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:alpha="0"
-				android:background="#bf000000"
-				android:fitsSystemWindows="true"/>
-
-		<include
-				layout="@layout/filter_layout"
-				android:id="@+id/filter_layout"
-				android:visibility="gone"/>
-	</FrameLayout>
-
-</RelativeLayout>

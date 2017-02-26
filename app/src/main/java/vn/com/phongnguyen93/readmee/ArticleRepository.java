@@ -44,14 +44,16 @@ public class ArticleRepository {
   }
 
   public void searchArticle(ArticleQuery articleQuery, final ArticleQueryCallback callback) {
-    if(articleQuery!=null && searchApiCall==null){
+    if (articleQuery != null && searchApiCall == null) {
       endpoint.searchArticle(context.getString(R.string.api_key), articleQuery.getQuery(),
-          articleQuery.getBeginDate(), articleQuery.getEndDate(), articleQuery.getSort(),
+          articleQuery.getBeginDate(), articleQuery.getFilterQuery(), articleQuery.getSort(),
           articleQuery.getPage()).enqueue(new Callback<ApiResponse>() {
         @Override public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
           if (response.isSuccessful()
               && response.body() != null
-              && response.body().getResponse() != null) {
+              && response.body().getResponse() != null
+              && response.body().getResponse().getDocs() != null
+              && response.body().getResponse().getDocs().size() > 0) {
             callback.onQuerySuccess(response.body().getResponse().getDocs());
           } else {
             callback.onQueryFail();

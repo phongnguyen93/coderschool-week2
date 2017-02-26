@@ -3,4 +3,7 @@
 	<string name="api_key">bea2ed3bbd424cf99ac68301c385a42b</string>
 	<string name="base_url">https://api.nytimes.com/svc/search/v2/</string>
 	<string name="base_image_url">https://nytimes.com/</string>
+	<string name="date_text"><![CDATA[Begin date: <b><font color=#FFC107>%1$s</b>]]></string>
+	<string name="tags_text"><![CDATA[Tags: <b><font color=#FFC107> %1$s</b>]]></string>
+
 </resources>

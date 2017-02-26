@@ -235,4 +235,6 @@ public abstract class BaseActivity extends AppCompatActivity {
   protected abstract void onLoading();
 
   protected abstract void onSuccess();
+
+  protected abstract void onNetworkError();
 }

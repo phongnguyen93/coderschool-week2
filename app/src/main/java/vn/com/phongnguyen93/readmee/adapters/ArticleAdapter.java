@@ -1,6 +1,7 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.adapters;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
+import vn.com.phongnguyen93.readmee.R;
 import vn.com.phongnguyen93.readmee.models.Article;
 import vn.com.phongnguyen93.readmee.models.Multimedia;
 
@@ -22,20 +24,29 @@ import vn.com.phongnguyen93.readmee.models.Multimedia;
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder> {
   public static final int COMPACT_VIEW_TYPE = 0;
   public static final int FULL_VIEW_TYPE = 1;
+  public static final int FOOTER_VIEW_TYPE = 2;
 
   private ArrayList<Article> articles;
   private Context context;
 
-  public void setArticles(ArrayList<Article> articles) {
-    if (articles != null && articles.size() > 0) {
-      this.articles = articles;
+  public void setArticles(ArrayList<Article> data, boolean isMergeData) {
+    if (data != null && data.size() > 0) {
+      if (isMergeData) {
+        if (this.articles == null) this.articles = new ArrayList<>();
+        articles.addAll(articles.size(), data);
+      } else {
+        articles = data;
+      }
+      articles.add(new Article());
       notifyDataSetChanged();
     }
   }
 
-  private int detectViewType(int mediaContentCount) {
+  private int detectViewType(int mediaContentCount, int position) {
+    if (position == articles.size() - 1) return FOOTER_VIEW_TYPE;
+
     if (mediaContentCount > 0) {
-      if (mediaContentCount == 2) {
+      if (mediaContentCount > 1) {
         return FULL_VIEW_TYPE;
       } else {
         return COMPACT_VIEW_TYPE;
@@ -52,16 +63,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         imageURL = multimediaArrayList.get(0).getUrl();
         break;
       case 2:
-        for (Multimedia multimedia : multimediaArrayList) {
-          if (multimedia.getSubtype().equals(Multimedia.SUBTYPE_LARGE)) {
-            imageURL = multimedia.getUrl();
-          }
-        }
-        break;
       case 3:
         for (Multimedia multimedia : multimediaArrayList) {
-          if (multimedia.getSubtype().equals(Multimedia.SUBTYPE_LARGE) || multimedia.getSubtype()
-              .equals(Multimedia.SUBTYPE_XLARGE)) {
+          if (multimedia.getSubtype().equals(Multimedia.SUBTYPE_XLARGE) || multimedia.getSubtype()
+              .equals(Multimedia.SUBTYPE_LARGE) || multimedia.getSubtype()
+              .equals(Multimedia.SUBTYPE_WIDE)) {
             imageURL = multimedia.getUrl();
           }
         }
@@ -73,7 +79,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
   @Override public int getItemViewType(int position) {
     return detectViewType(articles.get(position).getMultimedia() != null ? articles.get(position)
         .getMultimedia()
-        .size() : 0);
+        .size() : 0, position);
   }
 
   public ArticleAdapter(Context context) {
@@ -85,15 +91,20 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     if (viewType == COMPACT_VIEW_TYPE) {
       v = LayoutInflater.from(parent.getContext())
           .inflate(R.layout.article_compact_item_layout, parent, false);
-    } else {
+    } else if (viewType == FULL_VIEW_TYPE) {
       v = LayoutInflater.from(parent.getContext())
           .inflate(R.layout.article_full_item_layout, parent, false);
+    } else {
+      v = LayoutInflater.from(parent.getContext())
+          .inflate(R.layout.article_footer_item_layout, parent, false);
     }
     return new ArticleViewHolder(v, context);
   }
 
   @Override public void onBindViewHolder(ArticleViewHolder holder, int position) {
-    holder.bindItem(articles.get(position));
+    if (getItemViewType(position) != FOOTER_VIEW_TYPE) {
+      holder.bindItem(articles.get(position));
+    }
   }
 
   @Override public int getItemCount() {
@@ -101,9 +112,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
   }
 
   public class ArticleViewHolder extends RecyclerView.ViewHolder {
-    @BindView(R.id.tv_headline) TextView tvHeadline;
-    @BindView(R.id.tv_snippet) TextView tvSnippet;
-    @BindView(R.id.img_cover) ImageView imgCover;
+    @Nullable @BindView(R.id.tv_headline) TextView tvHeadline;
+    @Nullable @BindView(R.id.tv_snippet) TextView tvSnippet;
+    @Nullable @BindView(R.id.img_cover) ImageView imgCover;
 
     public ArticleViewHolder(View itemView, Context context) {
       super(itemView);
@@ -111,23 +122,28 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     }
 
     void bindItem(Article item) {
-      tvHeadline.setText(item.getHeadline().getMain());
-      if (!TextUtils.isEmpty(item.getHeadline().getName())) {
-        tvSnippet.setText(item.getHeadline().getName());
-      }else{
-        tvSnippet.setVisibility(View.GONE);
-        tvHeadline.setMaxLines(3);
-      }
-      if (item.getMultimedia() != null && item.getMultimedia().size() > 0) {
-        Glide.with(context)
-            .load(context.getString(R.string.base_image_url) + getImageURL(item.getMultimedia()))
-            .crossFade()
-            .fitCenter()
-            .error(R.drawable.placeholder_120x100)
-            .placeholder(R.drawable.placeholder_120x100)
-            .into(imgCover);
-      } else if (item.getMultimedia().size() == 0) {
-        Glide.with(context).load(R.drawable.placeholder_120x100).into(imgCover);
+      if (item != null && tvHeadline != null && tvSnippet != null && imgCover != null) {
+        if (item.getHeadline() != null) {
+          tvHeadline.setText(item.getHeadline().getMain());
+          if (!TextUtils.isEmpty(item.getHeadline().getName())) {
+            tvSnippet.setText(item.getHeadline().getName());
+          } else {
+            tvSnippet.setVisibility(View.GONE);
+            tvHeadline.setMaxLines(3);
+          }
+        }
+
+        if (item.getMultimedia() != null && item.getMultimedia().size() > 0) {
+          Glide.with(context)
+              .load(context.getString(R.string.base_image_url) + getImageURL(item.getMultimedia()))
+              .crossFade()
+              .fitCenter()
+              .error(R.drawable.placeholder_120x100)
+              .placeholder(R.drawable.placeholder_120x100)
+              .into(imgCover);
+        } else if (item.getMultimedia() != null && item.getMultimedia().size() == 0) {
+          Glide.with(context).load(R.drawable.placeholder_120x100).into(imgCover);
+        }
       }
     }
   }
