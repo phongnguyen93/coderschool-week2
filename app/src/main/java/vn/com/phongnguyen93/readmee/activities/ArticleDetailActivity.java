@@ -3,8 +3,6 @@ package vn.com.phongnguyen93.readmee.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +31,6 @@ public class ArticleDetailActivity extends BaseActivity {
   @BindView(R.id.error_layout) RelativeLayout errorLayout;
   @BindView(R.id.network_error_layout) RelativeLayout netErrorLayout;
 
-
   private static final String TAG = ArticleDetailActivity.class.getSimpleName();
   private Article currentArticle;
   private String articleURL;
@@ -46,7 +43,9 @@ public class ArticleDetailActivity extends BaseActivity {
     if (getIntent() != null) {
       currentArticle = getIntent().getParcelableExtra(ARTICLE_KEY);
       articleURL = currentArticle.getWeb_url();
-      toolbar.setTitle(currentArticle.getHeadline().getMain());
+      if (currentArticle.getHeadline() != null && currentArticle.getHeadline().getMain() != null) {
+        toolbar.setTitle(currentArticle.getHeadline().getMain());
+      }
     }
 
     initUI();
@@ -92,8 +91,6 @@ public class ArticleDetailActivity extends BaseActivity {
             .setDuration(240)
             .start();
         toolbar.setVisibility(View.GONE);
-
-
       }
     });
   }

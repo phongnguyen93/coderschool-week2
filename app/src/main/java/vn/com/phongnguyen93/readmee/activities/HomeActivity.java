@@ -11,25 +11,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import vn.com.phongnguyen93.readmee.ArticleRepository;
 import vn.com.phongnguyen93.readmee.FilterCallback;
 import vn.com.phongnguyen93.readmee.R;
-import vn.com.phongnguyen93.readmee.ui_view.SpaceItemDecoration;
 import vn.com.phongnguyen93.readmee.adapters.ArticleAdapter;
 import vn.com.phongnguyen93.readmee.fragmennts.FilterFragment;
 import vn.com.phongnguyen93.readmee.models.Article;
 import vn.com.phongnguyen93.readmee.models.ArticleQuery;
 import vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout;
+import vn.com.phongnguyen93.readmee.ui_view.SpaceItemDecoration;
 import vn.com.phongnguyen93.readmee.utilities.AnimationUtility;
 import vn.com.phongnguyen93.readmee.utilities.NetworkReceiver;
 
 public class HomeActivity extends BaseActivity
     implements ArticleRepository.ArticleQueryCallback, BaseActivity.SearchViewQueryCallback,
-    FilterCallback.FilterSubmitCallback, FilterCallback.FilterInteractionCallback,ArticleAdapter.OnArticleClickCallback {
+    FilterCallback.FilterSubmitCallback, FilterCallback.FilterInteractionCallback,
+    ArticleAdapter.OnArticleClickCallback {
   private static final int DEFAULT_ITEM_SPAN = 2;
   private static final int DEFAULT_SPACE_SIZE = 24;
   @BindView(R.id.list_article) RecyclerView listArticle;
@@ -42,6 +45,7 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.loading_layout) RelativeLayout loadingLayout;
   @BindView(R.id.error_layout) RelativeLayout errorLayout;
   @BindView(R.id.network_error_layout) RelativeLayout netErrorLayout;
+  @BindView(R.id.img_no_connection) ImageView imgNoConnection;
 
   private ArticleAdapter articleAdapter;
   private String currentQueryString;
@@ -65,9 +69,9 @@ public class HomeActivity extends BaseActivity
     setSearchtollbar(searchToolbar);
     setupRecyclerView();
     setupFilterView();
+
+    Glide.with(this).load(R.drawable.no_internet).fitCenter().into(imgNoConnection);
   }
-
-
 
   private void setupFilterView() {
 
@@ -109,7 +113,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void setupRecyclerView() {
-    articleAdapter = new ArticleAdapter(this,this);
+    articleAdapter = new ArticleAdapter(this, this);
     listArticle.setAdapter(articleAdapter);
     StaggeredGridLayoutManager staggeredGridLayoutManager =
         new StaggeredGridLayoutManager(DEFAULT_ITEM_SPAN, StaggeredGridLayoutManager.VERTICAL);
@@ -202,7 +206,6 @@ public class HomeActivity extends BaseActivity
     netErrorLayout.setVisibility(View.VISIBLE);
   }
 
-
   @Override public void onQuery(String queryString) {
     isMergeData = false;
     currentQueryString = queryString;
@@ -252,8 +255,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void openWebViewDetail(Article article) {
-    Intent t = new Intent(this,ArticleDetailActivity.class);
-    t.putExtra(ArticleDetailActivity.ARTICLE_KEY,article);
+    Intent t = new Intent(this, ArticleDetailActivity.class);
+    t.putExtra(ArticleDetailActivity.ARTICLE_KEY, article);
     startActivity(t);
   }
 }
