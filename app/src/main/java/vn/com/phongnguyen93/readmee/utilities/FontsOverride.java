@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.utilities;
 
 /**
  * Created by phongnguyen on 2/6/17.

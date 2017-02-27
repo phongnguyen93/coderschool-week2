@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.fragmennts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +12,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import java.util.ArrayList;
 import java.util.Arrays;
+import vn.com.phongnguyen93.readmee.FilterCallback;
+import vn.com.phongnguyen93.readmee.R;
+import vn.com.phongnguyen93.readmee.ui_view.SpaceItemDecoration;
 import vn.com.phongnguyen93.readmee.adapters.TagAdapter;
 
 /**

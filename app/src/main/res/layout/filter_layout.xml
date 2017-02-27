@@ -90,7 +90,7 @@
 			app:stl_dividerThickness="0dp"
 			app:stl_indicatorAlwaysInCenter="true"
 			app:stl_indicatorColor="@color/accent"
-			app:stl_indicatorCornerRadius="4dp"
+			app:stl_indicatorCornerRadius="47dp"
 			app:stl_indicatorGravity="center"
 			app:stl_indicatorInterpolation="smart"
 			app:stl_indicatorThickness="36dp"

@@ -13,7 +13,7 @@
 		app:umanoParallaxOffset="?actionBarSize"
 		app:umanoScrollableView="@+id/list_layout"
 		app:umanoShadowHeight="4dp"
-		tools:context="vn.com.phongnguyen93.readmee.MainActivity">
+		tools:context="vn.com.phongnguyen93.readmee.activities.HomeActivity">
 
 
 	<RelativeLayout

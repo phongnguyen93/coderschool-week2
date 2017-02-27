@@ -28,6 +28,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
 
   private ArrayList<Article> articles;
   private Context context;
+  private OnArticleClickCallback callback;
+
+  public interface OnArticleClickCallback {
+    void onClick(Article article);
+  }
 
   public void setArticles(ArrayList<Article> data, boolean isMergeData) {
     if (data != null && data.size() > 0) {
@@ -82,8 +87,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         .size() : 0, position);
   }
 
-  public ArticleAdapter(Context context) {
+  public ArticleAdapter(Context context, OnArticleClickCallback calll) {
     this.context = context;
+    this.callback = calll;
   }
 
   @Override public ArticleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -101,9 +107,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     return new ArticleViewHolder(v, context);
   }
 
-  @Override public void onBindViewHolder(ArticleViewHolder holder, int position) {
+  @Override public void onBindViewHolder(ArticleViewHolder holder, final int position) {
     if (getItemViewType(position) != FOOTER_VIEW_TYPE) {
       holder.bindItem(articles.get(position));
+      holder.itemView.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View view) {
+          callback.onClick(articles.get(position));
+        }
+      });
     }
   }
 

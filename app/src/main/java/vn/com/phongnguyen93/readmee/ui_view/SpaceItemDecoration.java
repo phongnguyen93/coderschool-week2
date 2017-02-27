@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.ui_view;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

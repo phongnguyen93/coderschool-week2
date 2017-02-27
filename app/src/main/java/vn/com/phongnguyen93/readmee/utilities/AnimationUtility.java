@@ -1,12 +1,9 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.utilities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
@@ -14,14 +11,16 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import vn.com.phongnguyen93.readmee.R;
+import vn.com.phongnguyen93.readmee.ReadMeeApplication;
 import vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout;
 
 /**
  * Created by phongnguyen on 2/26/17.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP) public class AnimationUtility {
+public class AnimationUtility {
 
-  public static void enterRevealSlidingPanelAnim(final View view,final SlidingUpPanelLayout panel,
+  public static void enterRevealSlidingPanelAnim(final View view, final SlidingUpPanelLayout panel,
       final Context context) {
 
     Animator animator = ViewAnimationUtils.createCircularReveal(view,
@@ -136,7 +135,7 @@ import vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout;
             CoordinatorLayout.LayoutParams.WRAP_CONTENT);
     layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
     int margin = context.getResources().getDimensionPixelSize(R.dimen.space_large);
-    layoutParams.setMargins(margin,margin,margin,margin);
+    layoutParams.setMargins(margin, margin, margin, margin);
     view.setLayoutParams(layoutParams);
   }
 }

@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.fragmennts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +12,8 @@ import butterknife.ButterKnife;
 import com.squareup.timessquare.CalendarPickerView;
 import java.util.Calendar;
 import java.util.Date;
+import vn.com.phongnguyen93.readmee.FilterCallback;
+import vn.com.phongnguyen93.readmee.R;
 
 /**
  * Created by phongnguyen on 2/26/17.

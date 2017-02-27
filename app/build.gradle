@@ -7,7 +7,7 @@ android {
   buildToolsVersion "25.0.2"
   defaultConfig {
     applicationId "vn.com.phongnguyen93.readmee"
-    minSdkVersion 16
+    minSdkVersion 21
     targetSdkVersion 25
     versionCode 1
     versionName "1.0"
@@ -22,34 +22,44 @@ android {
 }
 
 ext {
+  supportVersion = "25.1.1"
   okhttpVersion = "2.7.5"
   okhttp3Version = "3.3.1"
   daggerVersion = "2.0"
   retrofit2Verison = "2.1.0"
+  glideVersion = "3.7.0"
+  smartTabVersion = "1.6.1@aar"
+  timeSquareVersion = "1.6.5@aar"
+  butterKnifeVersion = "8.4.0"
 }
 
 dependencies {
   compile fileTree(include: ['*.jar'], dir: 'libs')
-  compile 'com.android.support:appcompat-v7:25.1.1'
-  compile 'com.github.bumptech.glide:glide:3.7.0'
   provided "com.google.dagger:dagger-compiler:${daggerVersion}"
   provided 'org.glassfish:javax.annotation:10.0-b28'
-  compile 'com.android.support:design:25.1.1'
-  compile 'com.android.support:cardview-v7:25.1.1'
-  compile 'com.android.support:recyclerview-v7:25.1.1'
-  compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
-  compile 'com.squareup:android-times-square:1.6.5@aar'
+
+  compile "com.android.support:appcompat-v7:${supportVersion}"
+  compile "com.android.support:design:${supportVersion}"
+  compile "com.android.support:cardview-v7:${supportVersion}"
+  compile "com.android.support:recyclerview-v7:${supportVersion}"
+
+  compile "com.github.bumptech.glide:glide:${glideVersion}"
+
+
+  compile "com.ogaclejapan.smarttablayout:library:${smartTabVersion}"
+
+  compile "com.squareup:android-times-square:${timeSquareVersion}"
+
   compile "com.squareup.okhttp3:okhttp:${okhttp3Version}"
   compile "com.squareup.okhttp3:logging-interceptor:${okhttp3Version}"
   compile "com.google.dagger:dagger:${daggerVersion}"
   compile "com.squareup.retrofit2:retrofit:${retrofit2Verison}"
   compile "com.squareup.retrofit2:converter-gson:${retrofit2Verison}"
-  compile 'com.jakewharton:butterknife:8.4.0'
-  apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+  compile "com.jakewharton:butterknife:${butterKnifeVersion}"
+  apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
   testCompile 'junit:junit:4.12'
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  compile 'com.android.support:recyclerview-v7:25.1.1'
-
 }

@@ -1,9 +1,11 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +15,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +27,11 @@ import android.widget.TextView;
 import java.lang.reflect.Field;
 import javax.inject.Inject;
 import retrofit2.Retrofit;
+import vn.com.phongnguyen93.readmee.ArticleRepository;
+import vn.com.phongnguyen93.readmee.R;
+import vn.com.phongnguyen93.readmee.ReadMeeApplication;
 import vn.com.phongnguyen93.readmee.network.interfaces.ReadMeeEndpoint;
+import vn.com.phongnguyen93.readmee.utilities.NetworkReceiver;
 
 import static vn.com.phongnguyen93.readmee.R.dimen.abc_action_button_min_width_material;
 import static vn.com.phongnguyen93.readmee.R.dimen.abc_action_button_min_width_overflow_material;
@@ -35,13 +40,15 @@ import static vn.com.phongnguyen93.readmee.R.dimen.abc_action_button_min_width_o
  * Created by phongnguyen on 2/23/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity
+    implements NetworkReceiver.NetworkCheck {
   @Inject ReadMeeEndpoint endpoint;
   @Inject Retrofit retrofit;
   private Menu searchMenu;
   private Toolbar searchToolbar;
   private MenuItem menuItem;
   private SearchViewQueryCallback searchViewQueryCallback;
+  private NetworkReceiver networkReceiver;
 
   protected interface SearchViewQueryCallback {
     void onQuery(String queryString);
@@ -51,6 +58,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     ReadMeeApplication.getmMainComponent().inject(this);
     ArticleRepository.getInstance().init(this, endpoint);
+
+    setupNetworkConnectionListener();
+  }
+
+  @Override protected void onStop() {
+    super.onStop();
+    try {
+      if (networkReceiver != null) this.unregisterReceiver(networkReceiver);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  private void setupNetworkConnectionListener() {
+    networkReceiver = new NetworkReceiver(this);
+    this.registerReceiver(networkReceiver,
+        new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
   }
 
   protected void setSearchViewQueryCallback(SearchViewQueryCallback callback) {
@@ -125,7 +149,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(
         android.support.v7.appcompat.R.id.search_src_text);
-    searchTextView.setHintTextColor(ContextCompat.getColor(this,R.color.primary));
+    searchTextView.setHintTextColor(ContextCompat.getColor(this, R.color.primary));
     try {
       Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
       mCursorDrawableRes.setAccessible(true);
@@ -193,22 +217,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     anim.start();
   }
 
-
-  protected void applyFontForToolbarTitle(Toolbar toolbar){
-    for(int i = 0; i < toolbar.getChildCount(); i++){
+  protected void applyFontForToolbarTitle(Toolbar toolbar) {
+    for (int i = 0; i < toolbar.getChildCount(); i++) {
       View view = toolbar.getChildAt(i);
-      if(view instanceof TextView){
+      if (view instanceof TextView) {
         TextView tv = (TextView) view;
         tv.setTextSize(24);
         Typeface titleFont = Typeface.
             createFromAsset(getAssets(), "Lobster.ttf");
-        if(tv.getText().equals(toolbar.getTitle())){
+        if (tv.getText().equals(toolbar.getTitle())) {
           tv.setTypeface(titleFont);
           break;
         }
       }
     }
   }
+
   @Override public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.menu_home, menu);
     return true;

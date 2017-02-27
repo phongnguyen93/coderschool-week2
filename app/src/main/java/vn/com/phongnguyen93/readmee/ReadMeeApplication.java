@@ -9,6 +9,7 @@ import vn.com.phongnguyen93.readmee.network.di.components.NetComponent;
 import vn.com.phongnguyen93.readmee.network.di.modules.ApiModule;
 import vn.com.phongnguyen93.readmee.network.di.modules.AppModule;
 import vn.com.phongnguyen93.readmee.network.di.modules.NetModule;
+import vn.com.phongnguyen93.readmee.utilities.FontsOverride;
 
 /**
  * Created by phongnguyen on 2/21/17.

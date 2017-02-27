@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+
+	<include
+			layout="@layout/toolbar"
+			android:id="@+id/toolbar"/>
+
+
+	<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+		<vn.com.phongnguyen93.readmee.ui_view.ObservableWebView
+				android:id="@+id/wv_content"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+		</vn.com.phongnguyen93.readmee.ui_view.ObservableWebView>
+
+		<include
+				layout="@layout/error_layout"
+				android:id="@+id/error_layout"
+				android:visibility="gone"/>
+
+		<include
+				layout="@layout/network_error_layout"
+				android:id="@+id/network_error_layout"
+				android:visibility="gone"/>
+
+		<include
+				layout="@layout/loading_layout"
+				android:id="@+id/loading_layout"
+				android:visibility="gone"/>
+
+	</FrameLayout>
+
+
+</LinearLayout>

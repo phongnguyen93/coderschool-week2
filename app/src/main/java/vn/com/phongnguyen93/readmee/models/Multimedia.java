@@ -1,12 +1,14 @@
 package vn.com.phongnguyen93.readmee.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 
 /**
  * Created by phongnguyen on 2/21/17.
  */
 
-public class Multimedia {
+public class Multimedia implements Parcelable {
   public static final String SUBTYPE_THUMBNAIL = "thumbnail";
   public static final String SUBTYPE_LARGE = "large";
   public static final String SUBTYPE_XLARGE = "xlarge";
@@ -20,6 +22,27 @@ public class Multimedia {
   private String format;
   private String copyright;
   private String caption;
+
+  protected Multimedia(Parcel in) {
+    url = in.readString();
+    height = in.readInt();
+    subtype = in.readString();
+    type = in.readString();
+    width = in.readInt();
+    format = in.readString();
+    copyright = in.readString();
+    caption = in.readString();
+  }
+
+  public static final Creator<Multimedia> CREATOR = new Creator<Multimedia>() {
+    @Override public Multimedia createFromParcel(Parcel in) {
+      return new Multimedia(in);
+    }
+
+    @Override public Multimedia[] newArray(int size) {
+      return new Multimedia[size];
+    }
+  };
 
   public String getUrl() {
     return url;
@@ -83,5 +106,20 @@ public class Multimedia {
 
   public void setCaption(String caption) {
     this.caption = caption;
+  }
+
+  @Override public int describeContents() {
+    return 0;
+  }
+
+  @Override public void writeToParcel(Parcel parcel, int i) {
+    parcel.writeString(url);
+    parcel.writeInt(height);
+    parcel.writeString(subtype);
+    parcel.writeString(type);
+    parcel.writeInt(width);
+    parcel.writeString(format);
+    parcel.writeString(copyright);
+    parcel.writeString(caption);
   }
 }

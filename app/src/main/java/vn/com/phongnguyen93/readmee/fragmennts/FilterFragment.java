@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.fragmennts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +16,8 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import vn.com.phongnguyen93.readmee.FilterCallback;
+import vn.com.phongnguyen93.readmee.R;
 import vn.com.phongnguyen93.readmee.adapters.FragmentAdapter;
 import vn.com.phongnguyen93.readmee.models.ArticleQuery;
 

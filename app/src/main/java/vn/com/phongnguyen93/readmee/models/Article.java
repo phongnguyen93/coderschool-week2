@@ -1,12 +1,14 @@
 package vn.com.phongnguyen93.readmee.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 
 /**
  * Created by phongnguyen on 2/21/17.
  */
 
-public class Article {
+public class Article implements Parcelable {
   private String web_url;
   private String snippet;
   private String lead_paragraph;
@@ -24,6 +26,38 @@ public class Article {
   private Article.Headline headline;
   private Article.Keyword keyword;
 
+  public Article(){
+
+  }
+
+  public Article(Parcel in) {
+    web_url = in.readString();
+    snippet = in.readString();
+    lead_paragraph = in.readString();
+    source = in.readString();
+    pub_date = in.readString();
+    document_type = in.readString();
+    section_name = in.readString();
+    subsection_name = in.readString();
+    credit = in.readString();
+    rank = in.readString();
+    type_of_material = in.readString();
+    _id = in.readString();
+    word_count = in.readString();
+    multimedia = in.createTypedArrayList(Multimedia.CREATOR);
+    headline = in.readParcelable(Headline.class.getClassLoader());
+    keyword = in.readParcelable(Keyword.class.getClassLoader());
+  }
+
+  public static final Creator<Article> CREATOR = new Creator<Article>() {
+    @Override public Article createFromParcel(Parcel in) {
+      return new Article(in);
+    }
+
+    @Override public Article[] newArray(int size) {
+      return new Article[size];
+    }
+  };
 
   public String getCredit() {
     return credit;
@@ -154,9 +188,56 @@ public class Article {
     this.rank = rank;
   }
 
-  public class Headline{
+  @Override public int describeContents() {
+    return 0;
+  }
+
+  @Override public void writeToParcel(Parcel parcel, int i) {
+    parcel.writeString(web_url);
+    parcel.writeString(snippet);
+    parcel.writeString(lead_paragraph);
+    parcel.writeString(source);
+    parcel.writeString(pub_date);
+    parcel.writeString(document_type);
+    parcel.writeString(section_name);
+    parcel.writeString(subsection_name);
+    parcel.writeString(credit);
+    parcel.writeString(rank);
+    parcel.writeString(type_of_material);
+    parcel.writeString(_id);
+    parcel.writeString(word_count);
+    parcel.writeTypedList(multimedia);
+    parcel.writeParcelable(headline, i);
+    parcel.writeParcelable(keyword, i);
+  }
+
+  public static class Headline implements Parcelable{
     private String main;
     private String name;
+
+    protected Headline(Parcel in) {
+      main = in.readString();
+      name = in.readString();
+    }
+
+    @Override public void writeToParcel(Parcel dest, int flags) {
+      dest.writeString(main);
+      dest.writeString(name);
+    }
+
+    @Override public int describeContents() {
+      return 0;
+    }
+
+    public static final Creator<Headline> CREATOR = new Creator<Headline>() {
+      @Override public Headline createFromParcel(Parcel in) {
+        return new Headline(in);
+      }
+
+      @Override public Headline[] newArray(int size) {
+        return new Headline[size];
+      }
+    };
 
     public String getMain() {
       return main;
@@ -176,10 +257,26 @@ public class Article {
   }
 
 
-  public class Keyword{
+  public static class Keyword implements Parcelable{
     private String rank;
     private String name;
     private String value;
+
+    protected Keyword(Parcel in) {
+      rank = in.readString();
+      name = in.readString();
+      value = in.readString();
+    }
+
+    public static final Creator<Keyword> CREATOR = new Creator<Keyword>() {
+      @Override public Keyword createFromParcel(Parcel in) {
+        return new Keyword(in);
+      }
+
+      @Override public Keyword[] newArray(int size) {
+        return new Keyword[size];
+      }
+    };
 
     public String getRank() {
       return rank;
@@ -203,6 +300,16 @@ public class Article {
 
     public void setValue(String value) {
       this.value = value;
+    }
+
+    @Override public int describeContents() {
+      return 0;
+    }
+
+    @Override public void writeToParcel(Parcel parcel, int i) {
+      parcel.writeString(rank);
+      parcel.writeString(name);
+      parcel.writeString(value);
     }
   }
 

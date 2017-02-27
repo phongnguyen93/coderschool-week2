@@ -1,7 +1,6 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.activities;
 
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -16,15 +15,21 @@ import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import java.util.ArrayList;
+import vn.com.phongnguyen93.readmee.ArticleRepository;
+import vn.com.phongnguyen93.readmee.FilterCallback;
+import vn.com.phongnguyen93.readmee.R;
+import vn.com.phongnguyen93.readmee.ui_view.SpaceItemDecoration;
 import vn.com.phongnguyen93.readmee.adapters.ArticleAdapter;
+import vn.com.phongnguyen93.readmee.fragmennts.FilterFragment;
 import vn.com.phongnguyen93.readmee.models.Article;
 import vn.com.phongnguyen93.readmee.models.ArticleQuery;
 import vn.com.phongnguyen93.readmee.ui_view.SlidingUpPanelLayout;
+import vn.com.phongnguyen93.readmee.utilities.AnimationUtility;
+import vn.com.phongnguyen93.readmee.utilities.NetworkReceiver;
 
-public class MainActivity extends BaseActivity
+public class HomeActivity extends BaseActivity
     implements ArticleRepository.ArticleQueryCallback, BaseActivity.SearchViewQueryCallback,
-    FilterCallback.FilterSubmitCallback, FilterCallback.FilterInteractionCallback,
-    NetworkReceiver.NetworkCheck {
+    FilterCallback.FilterSubmitCallback, FilterCallback.FilterInteractionCallback,ArticleAdapter.OnArticleClickCallback {
   private static final int DEFAULT_ITEM_SPAN = 2;
   private static final int DEFAULT_SPACE_SIZE = 24;
   @BindView(R.id.list_article) RecyclerView listArticle;
@@ -33,7 +38,6 @@ public class MainActivity extends BaseActivity
   @BindView(R.id.list_layout) CoordinatorLayout listLayout;
   @BindView(R.id.filter_layout) FrameLayout filterLayout;
   @BindView(R.id.fab_filter) FloatingActionButton fabFilter;
-  @BindView(R.id.fab_load_more) FloatingActionButton fabLoadMore;
   @BindView(R.id.sliding_layout) SlidingUpPanelLayout slidingUpPanelLayout;
   @BindView(R.id.loading_layout) RelativeLayout loadingLayout;
   @BindView(R.id.error_layout) RelativeLayout errorLayout;
@@ -61,20 +65,15 @@ public class MainActivity extends BaseActivity
     setSearchtollbar(searchToolbar);
     setupRecyclerView();
     setupFilterView();
-    setupNetworkConnectionListener();
   }
 
-  private void setupNetworkConnectionListener() {
-    networkReceiver = new NetworkReceiver(this);
-    this.registerReceiver(networkReceiver,
-        new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-  }
+
 
   private void setupFilterView() {
 
     getSupportFragmentManager().beginTransaction()
         .replace(R.id.filter_layout,
-            FilterFragment.newInstance(MainActivity.this, MainActivity.this))
+            FilterFragment.newInstance(HomeActivity.this, HomeActivity.this))
         .commit();
     slidingUpPanelLayout.setAnchorPoint(0.5f);
     //slidingUpPanelLayout.setTouchEnabled(false);
@@ -98,27 +97,19 @@ public class MainActivity extends BaseActivity
 
     fabFilter.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        AnimationUtility.stub(fabFilter, MainActivity.this, listLayout,
+        AnimationUtility.stub(fabFilter, HomeActivity.this, listLayout,
             new AnimationUtility.AnimationEndCallback() {
               @Override public void onAnimationEnd() {
                 AnimationUtility.enterRevealSlidingPanelAnim(filterLayout, slidingUpPanelLayout,
-                    MainActivity.this);
+                    HomeActivity.this);
               }
             });
-      }
-    });
-
-    fabLoadMore.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        ++currentPage;
-        currentQuery.setPage(currentPage);
-        query(currentQuery);
       }
     });
   }
 
   private void setupRecyclerView() {
-    articleAdapter = new ArticleAdapter(this);
+    articleAdapter = new ArticleAdapter(this,this);
     listArticle.setAdapter(articleAdapter);
     StaggeredGridLayoutManager staggeredGridLayoutManager =
         new StaggeredGridLayoutManager(DEFAULT_ITEM_SPAN, StaggeredGridLayoutManager.VERTICAL);
@@ -167,6 +158,10 @@ public class MainActivity extends BaseActivity
     isMergeData = true;
   }
 
+  @Override public void onQueryEmptyResult() {
+    onError();
+  }
+
   @Override public void onQueryFail() {
     if (!isMergeData) onError();
   }
@@ -207,6 +202,7 @@ public class MainActivity extends BaseActivity
     netErrorLayout.setVisibility(View.VISIBLE);
   }
 
+
   @Override public void onQuery(String queryString) {
     isMergeData = false;
     currentQueryString = queryString;
@@ -214,6 +210,7 @@ public class MainActivity extends BaseActivity
     currentQuery.setPage(0);
     currentQuery.setFilterQuery(null);
     query(currentQuery);
+    onLoading();
   }
 
   @Override public void onSubmitFilter(final ArticleQuery articleQuery) {
@@ -221,23 +218,19 @@ public class MainActivity extends BaseActivity
         new AnimationUtility.AnimationEndCallback() {
           @Override public void onAnimationEnd() {
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            AnimationUtility.stub2(fabFilter, MainActivity.this, listLayout,
+            AnimationUtility.stub2(fabFilter, HomeActivity.this, listLayout,
                 new AnimationUtility.AnimationEndCallback() {
                   @Override public void onAnimationEnd() {
                     if (articleQuery != null) {
                       isMergeData = false;
                       articleQuery.setQuery(currentQueryString);
                       query(articleQuery);
+                      onLoading();
                     }
                   }
                 });
           }
         });
-  }
-
-  @Override protected void onStop() {
-    super.onStop();
-    if (networkReceiver != null) this.unregisterReceiver(networkReceiver);
   }
 
   @Override public void onChildViewInteract() {
@@ -252,5 +245,15 @@ public class MainActivity extends BaseActivity
   @Override public void onDisconnected() {
     onNetworkError();
     isMergeData = false;
+  }
+
+  @Override public void onClick(Article article) {
+    openWebViewDetail(article);
+  }
+
+  private void openWebViewDetail(Article article) {
+    Intent t = new Intent(this,ArticleDetailActivity.class);
+    t.putExtra(ArticleDetailActivity.ARTICLE_KEY,article);
+    startActivity(t);
   }
 }

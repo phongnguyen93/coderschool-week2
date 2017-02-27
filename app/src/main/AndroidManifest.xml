@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		package="vn.com.phongnguyen93.readmee">
+
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
+
 	<application
 			android:name=".ReadMeeApplication"
 			android:allowBackup="true"
@@ -10,7 +12,7 @@
 			android:label="@string/app_name"
 			android:supportsRtl="true"
 			android:theme="@style/AppTheme">
-		<activity android:name=".MainActivity">
+		<activity android:name=".activities.HomeActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 
@@ -18,7 +20,15 @@
 			</intent-filter>
 		</activity>
 
-		<receiver android:name=".NetworkReceiver">
+		<activity
+				android:name=".activities.ArticleDetailActivity"
+				android:parentActivityName=".activities.HomeActivity">
+			<meta-data
+					android:name="android.support.PARENT_ACTIVITY"
+					android:value=".activities.HomeActivity"/>
+		</activity>
+
+		<receiver android:name=".utilities.NetworkReceiver">
 			<intent-filter>
 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 			</intent-filter>

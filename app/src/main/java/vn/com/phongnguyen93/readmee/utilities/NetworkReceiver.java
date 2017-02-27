@@ -1,4 +1,4 @@
-package vn.com.phongnguyen93.readmee;
+package vn.com.phongnguyen93.readmee.utilities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

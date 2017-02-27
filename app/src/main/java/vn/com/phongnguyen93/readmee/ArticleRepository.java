@@ -39,7 +39,7 @@ public class ArticleRepository {
 
   public interface ArticleQueryCallback {
     void onQuerySuccess(ArrayList<Article> articles);
-
+    void onQueryEmptyResult();
     void onQueryFail();
   }
 
@@ -56,7 +56,7 @@ public class ArticleRepository {
               && response.body().getResponse().getDocs().size() > 0) {
             callback.onQuerySuccess(response.body().getResponse().getDocs());
           } else {
-            callback.onQueryFail();
+            callback.onQueryEmptyResult();
           }
         }
 
